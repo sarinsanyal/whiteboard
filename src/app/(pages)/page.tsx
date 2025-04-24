@@ -52,7 +52,7 @@ export default function Home() {
                 <CardTitle>🧠 Focused Collaboration</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Study doesn’t have to be a lonely road. Join or create shared rooms where you and your friends can work side-by-side virtually. Stay accountable, share progress, and support each other — all in a distraction-free environment built for learning.</p>
+                <p>Study doesn&apos;t have to be a lonely road. Join or create shared rooms where you and your friends can work side-by-side virtually. Stay accountable, share progress, and support each other — all in a distraction-free environment built for learning.</p>
               </CardContent>
             </Card>
 
@@ -61,7 +61,7 @@ export default function Home() {
                 <CardTitle>🎥 Live Whiteboard & Screenshare</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Visualize your ideas effortlessly with our interactive whiteboard and built-in screenshare. Whether you're solving equations, breaking down concepts, or brainstorming as a team, you can do it all together, live and in sync.</p>
+                <p>Visualize your ideas effortlessly with our interactive whiteboard and built-in screenshare. Whether you&apos;re solving equations, breaking down concepts, or brainstorming as a team, you can do it all together, live and in sync.</p>
               </CardContent>
             </Card>
 
@@ -70,7 +70,7 @@ export default function Home() {
                 <CardTitle>🔗 Easy Room Access</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Say goodbye to long sign-ups and complicated invites. Create a study room with just a click, and share the link with your group. They’ll be able to join instantly — no installs, no fuss. Just smooth, fast access to your shared workspace.</p>
+                <p>Say goodbye to long sign-ups and complicated invites. Create a study room with just a click, and share the link with your group. They&apos;ll be able to join instantly — no installs, no fuss. Just smooth, fast access to your shared workspace.</p>
               </CardContent>
             </Card>
 

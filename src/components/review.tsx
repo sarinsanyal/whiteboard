@@ -24,7 +24,7 @@ const reviews = [
     {
         name: "Jane",
         username: "@jane",
-        body: "I used to struggle coordinating group study. Now it’s one link and we’re in. Couldn’t be easier.",
+        body: "I used to struggle coordinating group study. Now it's one link and we’re in. Couldn’t be easier.",
         img: "https://avatar.vercel.sh/jane",
     },
     {
