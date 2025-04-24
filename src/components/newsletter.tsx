@@ -52,7 +52,7 @@ export default function Newsletter() {
                     <CardContent className="px-0">
                         <div className="flex flex-row m-5 ml-0">
                             <Input value={email} type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-                            <Button onClick={emailSubmit} type="submit" className="ml-1"> Submit</Button>
+                            <Button onClick={emailSubmit} type="submit" className="ml-1 cursor-pointer"> Submit</Button>
                         </div>
                     </CardContent>
                 </CardHeader>
