@@ -4,7 +4,8 @@ import "@/app/globals.css";
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from 'next-themes';
-
+// import { cn } from "@/lib/utils";
+import { DotPattern } from "@/components/magicui/dot-pattern";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +30,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
       >
+        <DotPattern className="h-full w-full" />
+
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Navbar />
           {children}
           <Footer />
         </ThemeProvider>
       </body>
+
     </html>
   );
 }

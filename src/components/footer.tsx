@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Footer() {
     return (
-        <footer className="flex flex-col items-center text-sm align-middle p-6 pb-3 border-t-1  font-[family-name:var(--font-geist-sans)]">
+        <footer className="flex flex-col items-center text-sm align-middle p-6 pb-3 border-t-1 bg-background/50 backdrop-blur-2xl font-[family-name:var(--font-geist-sans)]">
             <div className="">
                 Created by Sarin Sanyal
             </div>
