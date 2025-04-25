@@ -11,14 +11,22 @@ import { Input } from "@/components/ui/input"
 import { Button } from "./ui/button";
 import {useState} from "react";
 import { toast } from "sonner";
+import { validate } from 'email-validator';
 
 export default function Newsletter() {
     const [email, setEmail] = useState('');
-
     const emailSubmit = async () => {
         if (!email) {
             toast.error("Please enter valid Email!");
             return;
+        }
+        else{
+            const isValid = validate(email);
+            if (!isValid) {
+                toast.error("Enter Valid Email Format!");
+                console.error("Invalid Email Format")
+                return;
+            }
         }
         try {
             const response = await fetch("/api/newsletter", {
@@ -30,7 +38,7 @@ export default function Newsletter() {
             });
 
             if (response.ok) {
-                toast.message("Thank you for subscribing!");
+                toast.success("Thank you for subscribing!");
                 setEmail(""); 
             } else {
                 toast.message("Failed to subscribe. Please try again.");
