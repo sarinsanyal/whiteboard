@@ -32,7 +32,7 @@ export default function Home() {
 
       {/* new Room Section */}
       <BlurFade delay={0.5} inView>
-        <InteractiveHoverButton className="p-5">
+        <InteractiveHoverButton className="p-5 bg-gray-200 dark:bg-gray-800">
           <Link href="/room">
             Create a New Room!
           </Link>
