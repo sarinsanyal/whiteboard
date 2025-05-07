@@ -7,7 +7,7 @@
     "dev:socket": "tsx server.ts",
     "build": "next build",
     "start": "next start",
-    "start:socket": "NODE_ENV=production node server.mts",
+    "start:socket": "cross-env NODE_ENV=production node server.mts",
     "lint": "next lint"
   },
   "dependencies": {
@@ -44,12 +44,13 @@
     "@types/react-dom": "^19",
     "@types/socket.io": "^3.0.1",
     "@types/socket.io-client": "^1.4.36",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "tw-animate-css": "^1.2.8",
-    "typescript": "^5"
+    "typescript": "^5.8.3"
   }
 }
