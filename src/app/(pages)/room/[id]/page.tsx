@@ -190,7 +190,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       </div>
 
       {/* Chat box */}
-      <div className="w-full max-w-3xl flex flex-col flex-grow bg-white z-1 rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div className="w-full max-w-3xl flex flex-col flex-grow bg-white dark:bg-gray-950 z-1 rounded-lg shadow-md overflow-hidden border border-gray-200">
         <div className="flex-grow overflow-y-auto p-4 space-y-2 h-[60vh]">
           {messages.map((msg, idx) => (
             <div
@@ -200,8 +200,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
               <div
                 className={`max-w-[75%] px-4 py-2 rounded-lg ${
                   msg.self
-                    ? "bg-blue-100 text-right text-black"
-                    : "bg-gray-200 text-left text-black"
+                    ? "bg-blue-300 text-right text-black"
+                    : "bg-green-200 text-left text-black"
                 }`}
               >
                 <p className="font-bold">{msg.sender}</p>
@@ -221,7 +221,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             onChange={(e) => setMessageInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
-          <Button onClick={sendMessage} className="bg-blue-500 text-white">
+          <Button onClick={sendMessage} className="bg-blue-500 cursor-pointer text-white">
             Send
           </Button>
         </div>

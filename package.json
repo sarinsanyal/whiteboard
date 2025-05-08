@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:socket": "tsx server.ts",
+    "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" ts-node server.mts",
     "build": "next build",
     "start": "next start",
-    "start:socket": "cross-env NODE_ENV=production node server.mts",
+    "start:socket": "cross-env NODE_ENV=production tsx server.mts",
     "lint": "next lint"
   },
   "dependencies": {
