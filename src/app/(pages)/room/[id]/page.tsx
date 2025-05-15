@@ -16,13 +16,20 @@ interface Message {
 
 export default function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { id } = use(params);
+  const [roomId, setRoomId] = useState("");
+
+  useEffect(() => {
+    params.then((data) => {
+      setRoomId(data.id);
+    });
+  }, [params]);
+  ;
   const [loading, setLoading] = useState(true);
   const [roomExists, setRoomExists] = useState(false);
   const [nickname, setNickname] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
+  const [transport, setTransport] = useState<string>("N/A");
   const [messageInput, setMessageInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -36,7 +43,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     const checkRoom = async () => {
       const nickname = localStorage.getItem("nickname");
       const sessionId = localStorage.getItem("sessionId");
-      const roomId = id;
+      const roomId = localStorage.getItem("roomId");
 
       if (!nickname || !sessionId) {
         router.push("/");
@@ -59,7 +66,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     };
 
     checkRoom();
-  }, [id, router]);
+  }, [roomId, router]);
 
   useEffect(() => {
     if (socket.connected) onConnect();
@@ -143,14 +150,14 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         e.returnValue = "";
       }
     };
-  
+
     window.addEventListener("beforeunload", handleBeforeUnload);
-  
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-  
+
 
   if (loading) {
     return (
@@ -179,7 +186,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     <div className="flex flex-col items-center justify-between min-h-screen p-4 space-y-4">
       <div className="w-full flex flex-col md:flex-row md:justify-between pt-20 md:items-center text-center md:text-left">
         <h1 className="text-2xl font-bold mb-2 md:mb-0 z-1">
-          Welcome to Room: <AuroraText>{id}</AuroraText>
+          Welcome to Room: <AuroraText>{roomId}</AuroraText>
         </h1>
         <h1 className="text-2xl font-bold z-1">
           Your Nickname: <AuroraText>{nickname}</AuroraText>
@@ -198,11 +205,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
               className={`flex ${msg.self ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[75%] px-4 py-2 rounded-lg ${
-                  msg.self
+                className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.self
                     ? "bg-blue-300 text-right text-black"
                     : "bg-green-200 text-left text-black"
-                }`}
+                  }`}
               >
                 <p className="font-bold">{msg.sender}</p>
                 <p>{msg.content}</p>
