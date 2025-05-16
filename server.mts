@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
-const port = 3001; 
+const port = 3001;
 
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
@@ -14,20 +14,25 @@ app.prepare().then(() => {
 
     const io = new Server(httpServer, {
         cors: {
-            origin: "*", 
+            origin: dev ? "*" : "your-production-domain.com",
             methods: ["GET", "POST"]
         }
     });
 
     io.on("connection", (socket) => {
         console.log(`User Connected: ${socket.id}`);
+        console.log("Transport:", socket.conn.transport.name);
+
+        socket.conn.on("upgrade", (transport) => {
+            console.log(`Transport upgraded to: ${transport.name}`);
+        });
 
         let userRoom: string | null = null;
 
         socket.on("join-room", ({ room, nickname }: { room: string; nickname: string }) => {
             userRoom = room;
             socket.join(room);
-            console.log(`${nickname} joined room ${room}`);
+            console.log(`\n ${nickname} joined room ${room}`);
             socket.to(room).emit("user-joined", `${nickname} joined the room`);
         });
 

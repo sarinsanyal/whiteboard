@@ -9,14 +9,14 @@ import { toast } from "sonner";
 import { socket } from "@/socket";
 
 interface Message {
-  sender: string;
+  sender?: string;
   content: string;
-  self: boolean;
+  self?: boolean;
+  system?: boolean;
 }
 
 export default function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const [roomId, setRoomId] = useState("");
 
   useEffect(() => {
     params.then((data) => {
@@ -27,6 +27,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const [loading, setLoading] = useState(true);
   const [roomExists, setRoomExists] = useState(false);
   const [nickname, setNickname] = useState<string | null>(null);
+  const [roomId, setRoomId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState<string>("N/A");
@@ -36,6 +37,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   useEffect(() => {
     setNickname(localStorage.getItem("nickname"));
     setSessionId(localStorage.getItem("sessionId"));
+    setRoomId(localStorage.getItem("roomId"));
     localStorage.setItem("hasLeftRoom", "false");
   }, []);
 
@@ -68,8 +70,22 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     checkRoom();
   }, [roomId, router]);
 
+
   useEffect(() => {
-    if (socket.connected) onConnect();
+    if (nickname) {
+      if (!socket.connected) {
+        socket.connect();
+
+        // Emit join-room after connecting
+        socket.on("connect", () => {
+          socket.emit("join-room", {
+            room: roomId, // or some dynamic room id
+            nickname: nickname,
+          });
+          console.log("RoomId is: ", roomId);
+        });
+      }
+    }
 
     function onConnect() {
       setIsConnected(true);
@@ -100,10 +116,27 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     };
   }, [nickname]);
 
+  useEffect(() => {
+    socket.on("connect_error", (err: string) => {
+      console.error("Connection error:", err);
+      toast.error("Failed to connect to chat server");
+    });
+
+    return () => {
+      socket.off("connect_error");
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("Socket instance:", socket);
+    console.log("Socket connected?", socket.connected);
+  }, [socket]);
+
   const sendMessage = () => {
     const trimmed = messageInput.trim();
     if (trimmed && nickname) {
       socket.emit("message", { sender: nickname, content: trimmed });
+      console.log(`Message emitted by ${nickname} is: ${messageInput}`);
       setMessages((prev) => [...prev, { sender: nickname, content: trimmed, self: true }]);
       setMessageInput("");
     }
@@ -206,8 +239,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             >
               <div
                 className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.self
-                    ? "bg-blue-300 text-right text-black"
-                    : "bg-green-200 text-left text-black"
+                  ? "bg-blue-300 text-right text-black"
+                  : "bg-green-200 text-left text-black"
                   }`}
               >
                 <p className="font-bold">{msg.sender}</p>
