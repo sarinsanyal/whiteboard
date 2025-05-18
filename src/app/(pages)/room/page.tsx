@@ -190,28 +190,17 @@ export default function Room() {
 									<div className="w-full border-b border-gray-300"></div>
 								</div>
 								<Label className="mb-2" htmlFor="nickname">Enter Room </Label>
-								<InputOTP
-									maxLength={7}
+								<Input
+									type="text"
+									placeholder="Enter Room ID"
 									value={roomId.toLowerCase()}
-									onChange={(roomId) => {
-										setRoomId(roomId);
-										setIdEntered(true);
-										if (!roomId) setIdEntered(false);
+									onChange={(e) => {
+										const input = e.target.value.replace(/[^a-zA-Z0-9]/g, "") // Allow only alphanumerics
+										setRoomId(input)
+										setIdEntered(input.length > 0)
 									}}
-								>
-									<InputOTPGroup>
-										<InputOTPSlot index={0} />
-										<InputOTPSlot index={1} />
-										<InputOTPSlot index={2} />
-										<InputOTPSlot index={3} />
-									</InputOTPGroup>
-									<InputOTPSeparator />
-									<InputOTPGroup>
-										<InputOTPSlot index={4} />
-										<InputOTPSlot index={5} />
-										<InputOTPSlot index={6} />
-									</InputOTPGroup>
-								</InputOTP>
+									className="w-full text-center tracking-widest font-mono text-lg rounded-xl shadow-sm"
+								/>
 
 								<Button
 									disabled={!valuesEntered || !IdEntered || loading}
