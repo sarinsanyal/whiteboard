@@ -1,9 +1,8 @@
 "use client";
 
-import { SetStateAction, useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuroraText } from "@/components/magicui/aurora-text";
-// import { Card } from "@/components/ui/card"; 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { socket } from "@/socket";
@@ -17,180 +16,116 @@ interface Message {
 
 export default function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-
-  useEffect(() => {
-    params.then((data) => {
-      setRoomId(data.id);
-    });
-  }, [params]);
-  ;
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const [nickname, setNickname] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [messageInput, setMessageInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [roomExists, setRoomExists] = useState(false);
-  const [nickname, setNickname] = useState<string | null>(null);
-  const [roomId, setRoomId] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState<string>("N/A");
-  const [messageInput, setMessageInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
 
+  // Set initial state from localStorage or params
   useEffect(() => {
-    setNickname(localStorage.getItem("nickname"));
-    setSessionId(localStorage.getItem("sessionId"));
-    setRoomId(localStorage.getItem("roomId"));
-    localStorage.setItem("hasLeftRoom", "false");
-  }, []);
-
-  useEffect(() => {
-    const checkRoom = async () => {
-      const nickname = localStorage.getItem("nickname");
-      const sessionId = localStorage.getItem("sessionId");
-      const roomId = localStorage.getItem("roomId");
-
-      if (!nickname || !sessionId) {
+    params.then((data) => {
+      const nick = localStorage.getItem("nickname");
+      if (!nick) {
         router.push("/");
         return;
       }
 
+      setRoomId(data.id);
+      setNickname(nick);
+      localStorage.setItem("hasLeftRoom", "false");
+    });
+  }, [params, router]);
+
+  // Check if room exists
+  useEffect(() => {
+    const checkRoom = async () => {
+      if (!roomId) return;
       try {
         const res = await fetch(`/api/room/check?roomId=${roomId}`);
-        if (res.ok) {
-          setRoomExists(true);
-        } else {
-          setRoomExists(false);
-        }
+        setRoomExists(res.ok);
       } catch (err) {
         console.error("Error checking room:", err);
-        setRoomExists(false);
       } finally {
         setLoading(false);
       }
     };
-
     checkRoom();
-  }, [roomId, router]);
+  }, [roomId]);
 
-
+  // Handle socket events
   useEffect(() => {
-    if (nickname) {
-      if (!socket.connected) {
-        socket.connect();
+    if (!nickname || !roomId) return;
 
-        // Emit join-room after connecting
-        socket.on("connect", () => {
-          socket.emit("join-room", {
-            room: roomId, // or some dynamic room id
-            nickname: nickname,
-          });
-          console.log("RoomId is: ", roomId);
-        });
-      }
-    }
+    socket.connect();
 
-    function onConnect() {
-      setIsConnected(true);
-      setTransport(socket.io.opts?.transports?.[0] || "N/A");
+    socket.emit("join-room", { room: roomId, username: nickname });
 
-      socket.io.on("upgrade", (transport: { name: SetStateAction<string> }) => {
-        setTransport(transport.name);
-      });
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-      setTransport("N/A");
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-
-    // Listen for incoming messages
-    socket.on("message", ({ sender, content }: { sender: string; content: string }) => {
+    socket.on("message", ({ roomId, content, sender, }: { sender: string; content: string; roomId: string }) => {
+      console.log(roomId);
       setMessages((prev) => [...prev, { sender, content, self: sender === nickname }]);
     });
 
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("message");
-    };
-  }, [nickname]);
+    socket.on("user_joined", (message: string) => {
+      setMessages((prev) => [...prev, { content: message, system: true }]);
+    });
 
-  useEffect(() => {
     socket.on("connect_error", (err: string) => {
       console.error("Connection error:", err);
       toast.error("Failed to connect to chat server");
     });
 
     return () => {
+      socket.off("message");
+      socket.off("user_joined");
       socket.off("connect_error");
+      socket.disconnect();
     };
-  }, []);
-
-  useEffect(() => {
-    console.log("Socket instance:", socket);
-    console.log("Socket connected?", socket.connected);
-  }, [socket]);
+  }, [nickname, roomId]);
 
   const sendMessage = () => {
     const trimmed = messageInput.trim();
-    if (trimmed && nickname) {
-      socket.emit("message", { sender: nickname, content: trimmed });
-      console.log(`Message emitted by ${nickname} is: ${messageInput}`);
-      setMessages((prev) => [...prev, { sender: nickname, content: trimmed, self: true }]);
-      setMessageInput("");
-    }
+    if (!trimmed || !nickname || !roomId) return;
+
+    socket.emit("message", { room: roomId, sender: nickname, message: trimmed });
+    setMessages((prev) => [...prev, { sender: nickname, content: trimmed, self: true }]);
+    setMessageInput("");
   };
 
   const leaveRoom = async () => {
     localStorage.setItem("hasLeftRoom", "true");
-    const roomId = localStorage.getItem("roomId");
-    const sessionId = localStorage.getItem("sessionId");
-
-    if (!roomId || !sessionId) {
-      console.error("Missing roomId or sessionId");
-      router.push("/");
-      return;
-    }
-
     try {
-      const res = await fetch("/api/room/leave", {
+      await fetch("/api/room/leave", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roomId, sessionId }),
+        body: JSON.stringify({
+          roomId: localStorage.getItem("roomId"),
+          sessionId: localStorage.getItem("sessionId"),
+        }),
       });
-
-      if (res.ok) {
-        toast.message(`Successfully Left Room: ${roomId}`);
-        localStorage.removeItem("roomId");
-        localStorage.removeItem("sessionId");
-        localStorage.removeItem("nickname");
-        localStorage.removeItem("admin");
-        router.push("/");
-      } else {
-        console.error("Failed to leave room");
-      }
-    } catch (error) {
-      console.error("Error leaving room:", error);
+      toast.message(`Left Room: ${roomId}`);
+    } catch (err) {
+      console.error("Failed to leave room:", err);
+    } finally {
+      localStorage.removeItem("roomId");
+      localStorage.removeItem("sessionId");
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("admin");
+      router.push("/");
     }
   };
 
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      const hasLeft = localStorage.getItem("hasLeftRoom");
-      if (hasLeft !== "true") {
+    const warnOnUnload = (e: BeforeUnloadEvent) => {
+      if (localStorage.getItem("hasLeftRoom") !== "true") {
         e.preventDefault();
         e.returnValue = "";
       }
     };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    window.addEventListener("beforeunload", warnOnUnload);
+    return () => window.removeEventListener("beforeunload", warnOnUnload);
   }, []);
-
 
   if (loading) {
     return (
@@ -229,25 +164,28 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         </Button>
       </div>
 
-      {/* Chat box */}
       <div className="w-full max-w-3xl flex flex-col flex-grow bg-white dark:bg-gray-950 z-1 rounded-lg shadow-md overflow-hidden border border-gray-200">
         <div className="flex-grow overflow-y-auto p-4 space-y-2 h-[60vh]">
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`flex ${msg.self ? "justify-end" : "justify-start"}`}
+              className={`flex ${msg.system ? "justify-center" : msg.self ? "justify-end" : "justify-start"
+                }`}
             >
               <div
-                className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.self
-                  ? "bg-blue-300 text-right text-black"
-                  : "bg-green-200 text-left text-black"
+                className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.system
+                    ? "bg-gray-300 text-gray-800 text-center"
+                    : msg.self
+                      ? "bg-blue-300 text-right text-black"
+                      : "bg-green-200 text-left text-black"
                   }`}
               >
-                <p className="font-bold">{msg.sender}</p>
+                {!msg.system && <p className="font-bold">{msg.sender}</p>}
                 <p>{msg.content}</p>
               </div>
             </div>
           ))}
+
         </div>
 
         {/* Message input */}

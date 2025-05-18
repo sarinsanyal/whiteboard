@@ -3,56 +3,35 @@ import next from "next";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 3001;
+const hostname = process.env.HOSTNAME || "localhost";
+const port = parseInt(process.env.PORT || "3001", 10);
 
 const app = next({ dev, hostname, port });
-const handler = app.getRequestHandler();
+const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-    const httpServer = createServer(handler);
-
-    const io = new Server(httpServer, {
-        cors: {
-            origin: dev ? "*" : "your-production-domain.com",
-            methods: ["GET", "POST"]
-        }
-    });
-
+    const httpServer = createServer(handle);
+    const io = new Server(httpServer);
     io.on("connection", (socket) => {
-        console.log(`User Connected: ${socket.id}`);
-        console.log("Transport:", socket.conn.transport.name);
+        console.log(`User connected: ${socket.id}`);
 
-        socket.conn.on("upgrade", (transport) => {
-            console.log(`Transport upgraded to: ${transport.name}`);
-        });
-
-        let userRoom: string | null = null;
-
-        socket.on("join-room", ({ room, nickname }: { room: string; nickname: string }) => {
-            userRoom = room;
+        socket.on("join-room", ({ room, username }) => {
             socket.join(room);
-            console.log(`\n ${nickname} joined room ${room}`);
-            socket.to(room).emit("user-joined", `${nickname} joined the room`);
+            console.log(`User ${username} joined room ${room}`);
+            socket.to(room).emit("user_joined", `${username} joined room `);
         });
 
-        socket.on("message", ({ sender, content }: { sender: string; content: string }) => {
-            if (userRoom) {
-                socket.to(userRoom).emit("message", { sender, content });
-            }
+        socket.on("message", ({ room, message, sender }) => {
+            console.log(`Message from ${sender} in room ${room}: ${message}`);
+            socket.to(room).emit("message", { roomId: room, sender, content: message });
         });
 
         socket.on("disconnect", () => {
-            console.log(`Disconnected: ${socket.id}`);
+            console.log(`User disconnected: ${socket.id}`);
         });
     });
 
-    httpServer
-        .once("error", (err) => {
-            console.error("Server error:", err);
-            process.exit(1);
-        })
-        .listen(port, () => {
-            console.log(`Server ready at http://${hostname}:${port}`);
-        });
+    httpServer.listen(port, () => {
+        console.log(`Server running on http://${hostname}:${port}`);
+    });
 });
