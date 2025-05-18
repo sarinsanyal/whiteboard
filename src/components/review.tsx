@@ -40,6 +40,12 @@ const reviews = [
         body: "Super helpful for last-minute revision sessions. Shared whiteboard is a game changer.",
         img: "https://avatar.vercel.sh/james",
     },
+    {
+        name: "Anamitra",
+        username: "@anamitra",
+        body: "Knowing Sarin from the beginning of his tech journey, it is incredibly satisfying to see the end product of Whiteboard. Amazing platform!",
+        img: "/review/anamitra.jpg"
+    }
 ];
 
 
