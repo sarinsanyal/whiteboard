@@ -71,6 +71,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       setMessages((prev) => [...prev, { content: message, system: true }]);
     });
 
+    socket.on("user_left", (message: string) => {
+      setMessages((prev) => [...prev, { content: message, system: true }]);
+    });
+
     socket.on("connect_error", (err: string) => {
       console.error("Connection error:", err);
       toast.error("Failed to connect to chat server");
@@ -174,10 +178,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             >
               <div
                 className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.system
-                    ? "bg-gray-300 text-gray-800 text-center"
-                    : msg.self
-                      ? "bg-blue-300 text-right text-black"
-                      : "bg-green-200 text-left text-black"
+                  ? "bg-gray-300 text-gray-800 text-center"
+                  : msg.self
+                    ? "bg-blue-300 text-right text-black"
+                    : "bg-green-200 text-left text-black"
                   }`}
               >
                 {!msg.system && <p className="font-bold">{msg.sender}</p>}

@@ -27,7 +27,11 @@ app.prepare().then(() => {
         });
 
         socket.on("disconnect", () => {
-            console.log(`User disconnected: ${socket.id}`);
+            const { username, room } = socket.data;
+            if (username && room) {
+                console.log(`User ${username} left room ${room}`);
+                socket.to(room).emit("user_left", `${username} left the room`);
+            }
         });
     });
 

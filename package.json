@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" ts-node server.mts",
-    "build": "next build",
+    "build": "next build && tsc server.mts --outDir dist",
     "start": "next start",
     "start:socket": "cross-env NODE_ENV=production tsx server.mts",
     "lint": "next lint"
