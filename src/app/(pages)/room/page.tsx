@@ -66,7 +66,7 @@ export default function Room() {
 				body: JSON.stringify({ nickname, sessionId, roomId, admin: false }),
 			});
 			if (response.ok) {
-				const data = await response.json()
+				// const data = await response.json()
 				toast.success(`Successfully Joined Room ${roomId}!`);
 				router.push(`/room/${roomId}`);
 			} else {
@@ -122,7 +122,7 @@ export default function Room() {
 				});
 
 				if (response.ok) {
-					const data = await response.json()
+					// const data = await response.json()
 					toast.success(`Successfully Created Room ${roomId}!`);
 					created = true;
 					router.push(`/room/${roomId}`);

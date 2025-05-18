@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Remove user with the matching sessionId
-        room.users = room.users.filter((user: any) => user.sessionId !== sessionId);
+        room.users = room.users.filter((user: { sessionId: string }) => user.sessionId !== sessionId);
 
         await room.save();
 

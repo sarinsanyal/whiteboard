@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
             room.users = [];
         }
 
-        const sessionExists = room.users.some((user: any) => user.sessionId === sessionId);
+        const sessionExists = room.users.some((user: { sessionId: string }) => user.sessionId === sessionId);
         if (sessionExists) {
             return NextResponse.json({ error: "Session already exists in room" }, { status: 409 });
         }
