@@ -63,28 +63,39 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
     socket.emit("join-room", { room: roomId, username: nickname });
 
-    socket.on("message", ({ roomId, content, sender, }: { sender: string; content: string; roomId: string }) => {
-      console.log(roomId);
+    // Message from other users
+    const onMessage = ({ roomId, content, sender }: { sender: string; content: string; roomId: string }) => {
       setMessages((prev) => [...prev, { sender, content, self: sender === nickname }]);
-    });
+      console.log(roomId);
+    };
 
-    socket.on("user_joined", (message: string) => {
+    // System message: user joined
+    const onUserJoined = (message: string) => {
       setMessages((prev) => [...prev, { content: message, system: true }]);
-    });
+    };
 
-    socket.on("user_left", (message: string) => {
+    // System message: user left
+    const onUserLeft = (message: string) => {
       setMessages((prev) => [...prev, { content: message, system: true }]);
-    });
+    };
 
-    socket.on("connect_error", (err: string) => {
+    const onConnectError = (err: string) => {
       console.error("Connection error:", err);
       toast.error("Failed to connect to chat server");
-    });
+    };
 
+    // Register listeners
+    socket.on("message", onMessage);
+    socket.on("user_joined", onUserJoined);
+    socket.on("user_left", onUserLeft);
+    socket.on("connect_error", onConnectError);
+
+    // Cleanup on unmount or re-render
     return () => {
-      socket.off("message");
-      socket.off("user_joined");
-      socket.off("connect_error");
+      socket.off("message", onMessage);
+      socket.off("user_joined", onUserJoined);
+      socket.off("user_left", onUserLeft);
+      socket.off("connect_error", onConnectError);
       socket.disconnect();
     };
   }, [nickname, roomId]);
@@ -101,6 +112,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
   //leave the room
   const leaveRoom = async () => {
+    socket.emit("leave-room", { room: roomId, username: nickname });
+    socket.disconnect();
     localStorage.setItem("hasLeftRoom", "true");
     try {
       await fetch("/api/room/leave", {
@@ -188,10 +201,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
               >
                 <div
                   className={`max-w-[75%] px-4 py-2 rounded-lg break-words ${msg.system
-                      ? "bg-gray-300 text-gray-800 text-center"
-                      : msg.self
-                        ? "bg-blue-500 text-black text-right"
-                        : "bg-green-200 text-black text-left"
+                    ? "bg-gray-300 text-gray-800 text-center"
+                    : msg.self
+                      ? "bg-blue-500 text-black text-right"
+                      : "bg-green-200 text-black text-left"
                     }`}
                 >
                   {!msg.system && <p className="font-semibold">{msg.sender}</p>}
