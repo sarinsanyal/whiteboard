@@ -190,7 +190,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
                   className={`max-w-[75%] px-4 py-2 rounded-lg break-words ${msg.system
                       ? "bg-gray-300 text-gray-800 text-center"
                       : msg.self
-                        ? "bg-blue-500 text-white text-right"
+                        ? "bg-blue-500 text-black text-right"
                         : "bg-green-200 text-black text-left"
                     }`}
                 >
