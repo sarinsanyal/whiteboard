@@ -22,6 +22,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const [messageInput, setMessageInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [roomExists, setRoomExists] = useState(false);
+  const [users, setUsers] = useState([]);
 
   // Set initial state from localStorage or params
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     };
   }, [nickname, roomId]);
 
+  //send a message
   const sendMessage = () => {
     const trimmed = messageInput.trim();
     if (!trimmed || !nickname || !roomId) return;
@@ -97,6 +99,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     setMessageInput("");
   };
 
+  //leave the room
   const leaveRoom = async () => {
     localStorage.setItem("hasLeftRoom", "true");
     try {
@@ -155,58 +158,81 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   }
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen p-4 space-y-4">
-      <div className="w-full flex flex-col md:flex-row md:justify-between pt-20 md:items-center text-center md:text-left">
-        <h1 className="text-2xl font-bold mb-2 md:mb-0 z-1">
+    <div className="flex flex-col items-center min-h-screen p-4 bg-gray-50 dark:bg-black space-y-4">
+      {/* Header */}
+      <div className="w-full max-w-6xl flex flex-col md:flex-row md:justify-between md:items-center text-center md:text-left pt-20 space-y-2 md:space-y-0">
+        <h1 className="text-2xl z-1 font-bold">
           Welcome to Room: <AuroraText>{roomId}</AuroraText>
         </h1>
-        <h1 className="text-2xl font-bold z-1">
+        <h1 className="text-2xl z-1 font-bold">
           Your Nickname: <AuroraText>{nickname}</AuroraText>
         </h1>
-        <Button className="bg-red-500 cursor-pointer z-1 mt-4 md:mt-0 w-full md:w-auto" onClick={leaveRoom}>
+        <Button
+          className="bg-red-500 cursor-pointer z-1 text-white px-4 py-2 rounded-md"
+          onClick={leaveRoom}
+        >
           Leave Room
         </Button>
       </div>
 
-      <div className="w-full max-w-3xl flex flex-col flex-grow bg-white dark:bg-gray-950 z-1 rounded-lg shadow-md overflow-hidden border border-gray-200">
-        <div className="flex-grow overflow-y-auto p-4 space-y-2 h-[60vh]">
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${msg.system ? "justify-center" : msg.self ? "justify-end" : "justify-start"
-                }`}
-            >
+      {/* Main content */}
+      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-4 flex-grow">
+        {/* Chat box */}
+        <div className="flex flex-col flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
+          <div className="flex-grow overflow-y-auto p-4 space-y-3 h-[60vh]">
+            {messages.map((msg, idx) => (
               <div
-                className={`max-w-[75%] px-4 py-2 rounded-lg ${msg.system
-                  ? "bg-gray-300 text-gray-800 text-center"
-                  : msg.self
-                    ? "bg-blue-300 text-right text-black"
-                    : "bg-green-200 text-left text-black"
+                key={idx}
+                className={`flex ${msg.system ? "justify-center" : msg.self ? "justify-end" : "justify-start"
                   }`}
               >
-                {!msg.system && <p className="font-bold">{msg.sender}</p>}
-                <p>{msg.content}</p>
+                <div
+                  className={`max-w-[75%] px-4 py-2 rounded-lg break-words ${msg.system
+                      ? "bg-gray-300 text-gray-800 text-center"
+                      : msg.self
+                        ? "bg-blue-500 text-white text-right"
+                        : "bg-green-200 text-black text-left"
+                    }`}
+                >
+                  {!msg.system && <p className="font-semibold">{msg.sender}</p>}
+                  <p>{msg.content}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
+          {/* Input section */}
+          <div className="p-3 border-t border-gray-300 flex items-center gap-2">
+            <input
+              type="text"
+              className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Type a message..."
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <Button
+              onClick={sendMessage}
+              className="bg-blue-500 cursor-pointer text-white px-4 py-2 rounded-md"
+            >
+              Send
+            </Button>
+          </div>
         </div>
 
-        {/* Message input */}
-        <div className="p-3 border-t border-gray-300 flex items-center gap-2">
-          <input
-            type="text"
-            className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Type a message..."
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
-          <Button onClick={sendMessage} className="bg-blue-500 cursor-pointer text-white">
-            Send
-          </Button>
+        {/* People present */}
+        <div className="w-full md:w-1/4 bg-white dark:bg-gray-950 border z-1 border-gray-200 rounded-lg shadow-md p-4 h-[60vh] flex flex-col">
+          <h2 className="text-xl font-semibold mb-2">People in Room</h2>
+          <ul className="overflow-y-auto space-y-1 text-gray-800 dark:text-gray-200">
+            {/* {people.map((person, index) => (
+              <li key={index} className="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-md">
+                {person}
+              </li>
+            ))} */}
+          </ul>
         </div>
       </div>
     </div>
+
   );
 }
