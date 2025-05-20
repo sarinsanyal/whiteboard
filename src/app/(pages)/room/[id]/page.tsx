@@ -219,7 +219,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             <input
               type="text"
               className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Type a message..."
+              placeholder="Type a message (use @AI for Gemini) ..."
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
