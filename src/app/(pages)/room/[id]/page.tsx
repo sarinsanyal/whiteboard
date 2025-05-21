@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AuroraText } from "@/components/magicui/aurora-text";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const [messageInput, setMessageInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [roomExists, setRoomExists] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<string[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Set initial state from localStorage or params
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       }
 
       setRoomId(data.id);
+      localStorage.setItem("roomId", data.id);
       setNickname(nick);
       localStorage.setItem("hasLeftRoom", "false");
     });
@@ -79,6 +81,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       setMessages((prev) => [...prev, { content: message, system: true }]);
     };
 
+    const onRoomUsers = (userList: string[]) => {
+      setUsers(userList);
+    };
+
     const onConnectError = (err: string) => {
       console.error("Connection error:", err);
       toast.error("Failed to connect to chat server");
@@ -87,6 +93,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     // Register listeners
     socket.on("message", onMessage);
     socket.on("user_joined", onUserJoined);
+    socket.on("update-users", onRoomUsers);
     socket.on("user_left", onUserLeft);
     socket.on("connect_error", onConnectError);
 
@@ -94,6 +101,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     return () => {
       socket.off("message", onMessage);
       socket.off("user_joined", onUserJoined);
+      socket.off("update-users", onRoomUsers);
       socket.off("user_left", onUserLeft);
       socket.off("connect_error", onConnectError);
       socket.disconnect();
@@ -146,6 +154,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     window.addEventListener("beforeunload", warnOnUnload);
     return () => window.removeEventListener("beforeunload", warnOnUnload);
   }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   if (loading) {
     return (
@@ -237,11 +249,11 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         <div className="w-full md:w-1/4 bg-white dark:bg-gray-950 border z-1 border-gray-200 rounded-lg shadow-md p-4 h-[60vh] flex flex-col">
           <h2 className="text-xl font-semibold mb-2">People in Room</h2>
           <ul className="overflow-y-auto space-y-1 text-gray-800 dark:text-gray-200">
-            {/* {people.map((person, index) => (
+            {users.map((user, index) => (
               <li key={index} className="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-md">
-                {person}
+                {user}
               </li>
-            ))} */}
+            ))}
           </ul>
         </div>
       </div>
