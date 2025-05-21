@@ -6,6 +6,7 @@ import { AuroraText } from "@/components/magicui/aurora-text";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { socket } from "@/socket";
+import React from 'react'
 
 interface Message {
   sender?: string;
@@ -23,8 +24,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const [loading, setLoading] = useState(true);
   const [roomExists, setRoomExists] = useState(false);
   const [users, setUsers] = useState<string[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
+  const ref = useChatScroll(messages)
   // Set initial state from localStorage or params
   useEffect(() => {
     params.then((data) => {
@@ -155,9 +155,16 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     return () => window.removeEventListener("beforeunload", warnOnUnload);
   }, []);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  function useChatScroll<T>(dep: T): React.MutableRefObject<HTMLDivElement | null> {
+    const ref = React.useRef<HTMLDivElement | null>(null);
+    React.useEffect(() => {
+      if (ref.current) {
+        ref.current.scrollTop = ref.current.scrollHeight;
+      }
+    }, [dep]);
+    return ref;
+  }
+
 
   if (loading) {
     return (
@@ -204,7 +211,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       <div className="w-full max-w-6xl flex flex-col md:flex-row gap-4 flex-grow">
         {/* Chat box */}
         <div className="flex flex-col flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
-          <div className="flex-grow overflow-y-auto p-4 space-y-3 h-[60vh]">
+          <div className="flex-grow overflow-y-auto p-4 space-y-3 h-[60vh]" ref={ref}>
             {messages.map((msg, idx) => (
               <div
                 key={idx}
