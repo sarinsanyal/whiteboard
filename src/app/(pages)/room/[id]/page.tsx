@@ -288,7 +288,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex p-2 ${msg.system ? "justify-center" : msg.self ? "justify-end" : "justify-start"
+                className={`flex px-2 py-0 ${msg.system ? "justify-center" : msg.self ? "justify-end" : "justify-start"
                   }`}
               >
                 <div
