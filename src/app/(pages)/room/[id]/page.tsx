@@ -6,7 +6,9 @@ import { AuroraText } from "@/components/magicui/aurora-text";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { socket } from "@/socket";
-import { Label } from "@/components/ui/label"
+import Board from "@/components/room/Board";
+import Code from "@/components/room/Code";
+import Video from "@/components/room/Video";
 import {
   Popover,
   PopoverContent,
@@ -31,7 +33,22 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const [roomExists, setRoomExists] = useState(false);
   const [users, setUsers] = useState<string[]>([]);
   const ref = useChatScroll(messages)
-  const [isOpen, setIsOpen] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<"Board" | "Code" | "Video">("Board");
+
+  const renderMainView = () => {
+    switch (activeTab) {
+      case "Board":
+        return <Board />;
+      case "Code":
+        return <Code />;
+      case "Video":
+        return <Video />;
+      default:
+        return null;
+    }
+  };
+
   // Set initial state from localStorage or params
   useEffect(() => {
     params.then((data) => {
@@ -72,18 +89,15 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
     socket.emit("join-room", { room: roomId, username: nickname });
 
-    // Message from other users
     const onMessage = ({ roomId, content, sender }: { sender: string; content: string; roomId: string }) => {
       setMessages((prev) => [...prev, { sender, content, self: sender === nickname }]);
       console.log(roomId);
     };
 
-    // System message: user joined
     const onUserJoined = (message: string) => {
       setMessages((prev) => [...prev, { content: message, system: true }]);
     };
 
-    // System message: user left
     const onUserLeft = (message: string) => {
       setMessages((prev) => [...prev, { content: message, system: true }]);
     };
@@ -209,7 +223,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         {/* Present Members: */}
         <Popover>
           <PopoverTrigger asChild>
-            <Button className="cursor-pointer z-1 bg-green-800 dark:bg-gray-800 text-white px-4 py-2 rounded-md" variant="outline">See Members Present: {users.length}</Button>
+            <Button className="cursor-pointer z-1 bg-green-800 dark:bg-green-800 text-white px-4 py-2 rounded-md" variant="outline">See Members Present: {users.length}</Button>
           </PopoverTrigger>
           <PopoverContent className="w-80">
             <div className="grid gap-4">
@@ -233,13 +247,48 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
       {/* Main content */}
       <div className="w-full max-w-6xl flex flex-col md:flex-row gap-4 flex-grow">
+        <div className="flex flex-col md:w-3/4 flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
+          <div className="flex justify-center border border-gray-100 gap-4 p-5">
+            <Button
+              onClick={() => setActiveTab("Board")}
+              variant={activeTab === "Board" ? "default" : "outline"}
+              className="text-xs md:text-sm cursor-pointer"
+            >
+              Whiteboard
+            </Button>
+            <Button
+              onClick={() => setActiveTab("Code")}
+              variant={activeTab === "Code" ? "default" : "outline"}
+              className="text-xs md:text-sm cursor-pointer"
+            >
+              Code Editor
+            </Button>
+            <Button
+              onClick={() => setActiveTab("Video")}
+              variant={activeTab === "Video" ? "default" : "outline"}
+              className="text-xs md:text-sm cursor-pointer"
+            >
+              Video Call
+            </Button>
+          </div>
+
+          <div className="flex-grow text-center bg-white dark:bg-gray-950 rounded-lg shadow-md p-4 overflow-hidden">
+            {renderMainView()}
+          </div>
+        </div>
         {/* Chat box */}
-        <div className="flex flex-col flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
-          <div className="flex-grow overflow-y-auto p-4 space-y-3 h-[60vh]" ref={ref}>
+        <div className="flex md:w-1/4 flex-col flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
+          <div className="flex-grow overflow-y-auto space-y-3 h-[60vh]" ref={ref}>
+            <div className="border border-gray-100 font-medium p-5 pb-3 text-center">
+              Chat with other Members!
+              <div className="text-gray-400 text-sm">
+                Use @AI to chat with AI Assistant
+              </div>
+            </div>
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex ${msg.system ? "justify-center" : msg.self ? "justify-end" : "justify-start"
+                className={`flex p-2 ${msg.system ? "justify-center" : msg.self ? "justify-end" : "justify-start"
                   }`}
               >
                 <div
@@ -261,8 +310,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
           <div className="p-3 border-t border-gray-300 flex items-center gap-2">
             <input
               type="text"
-              className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Type a message (use @AI for Gemini) ..."
+              className="flex-grow w-3/4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Type a message..."
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
@@ -275,7 +324,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             </Button>
           </div>
         </div>
-        
+
       </div>
     </div>
 
