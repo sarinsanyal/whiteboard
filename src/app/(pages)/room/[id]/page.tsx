@@ -6,6 +6,12 @@ import { AuroraText } from "@/components/magicui/aurora-text";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { socket } from "@/socket";
+import { Label } from "@/components/ui/label"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import React from 'react'
 
 interface Message {
@@ -25,6 +31,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const [roomExists, setRoomExists] = useState(false);
   const [users, setUsers] = useState<string[]>([]);
   const ref = useChatScroll(messages)
+  const [isOpen, setIsOpen] = useState(false);
   // Set initial state from localStorage or params
   useEffect(() => {
     params.then((data) => {
@@ -190,15 +197,32 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-4 bg-gray-50 dark:bg-black space-y-4">
+    <div className="flex flex-col items-center min-h-screen p-4 pt-20 bg-gray-50 dark:bg-black space-y-4">
       {/* Header */}
-      <div className="w-full max-w-6xl flex flex-col md:flex-row md:justify-between md:items-center text-center md:text-left pt-20 space-y-2 md:space-y-0">
+      <div className="w-full max-w-6xl flex flex-col bg-white dark:bg-gray-950 z-1 p-5 shadow-md border rounded-lg border-gray-100 md:flex-row md:justify-between md:items-center text-center md:text-left space-y-2 md:space-y-0">
         <h1 className="text-2xl z-1 font-bold">
           Welcome to Room: <AuroraText>{roomId}</AuroraText>
         </h1>
         <h1 className="text-2xl z-1 font-bold">
           Your Nickname: <AuroraText>{nickname}</AuroraText>
         </h1>
+        {/* Present Members: */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button className="cursor-pointer z-1 bg-green-800 dark:bg-gray-800 text-white px-4 py-2 rounded-md" variant="outline">See Members Present: {users.length}</Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            <div className="grid gap-4">
+              <ul className="overflow-y-auto space-y-1 text-gray-800 dark:text-gray-200">
+                {users.map((user, index) => (
+                  <li key={index} className="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-md">
+                    {user}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </PopoverContent>
+        </Popover>
         <Button
           className="bg-red-500 cursor-pointer z-1 text-white px-4 py-2 rounded-md"
           onClick={leaveRoom}
@@ -222,8 +246,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
                   className={`max-w-[75%] px-4 py-2 rounded-lg break-words ${msg.system
                     ? "bg-gray-300 text-gray-800 text-center"
                     : msg.self
-                      ? "bg-blue-500 text-black text-right"
-                      : "bg-green-200 text-black text-left"
+                      ? "bg-blue-500 dark:bg-blue-900 text-black dark:text-white text-right"
+                      : "bg-green-500 dark:bg-green-900 text-black dark:text-white text-left"
                     }`}
                 >
                   {!msg.system && <p className="font-semibold">{msg.sender}</p>}
@@ -251,18 +275,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             </Button>
           </div>
         </div>
-
-        {/* People present */}
-        <div className="w-full md:w-1/4 bg-white dark:bg-gray-950 border z-1 border-gray-200 rounded-lg shadow-md p-4 h-[60vh] flex flex-col">
-          <h2 className="text-xl font-semibold mb-2">People in Room</h2>
-          <ul className="overflow-y-auto space-y-1 text-gray-800 dark:text-gray-200">
-            {users.map((user, index) => (
-              <li key={index} className="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-md">
-                {user}
-              </li>
-            ))}
-          </ul>
-        </div>
+        
       </div>
     </div>
 

@@ -195,7 +195,7 @@ export default function Room() {
 									placeholder="Enter Room ID"
 									value={roomId.toLowerCase()}
 									onChange={(e) => {
-										const input = e.target.value.replace(/[^a-zA-Z0-9]/g, "") // Allow only alphanumerics
+										const input = e.target.value.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() // Allow only alphanumerics
 										setRoomId(input)
 										setIdEntered(input.length > 0)
 									}}
