@@ -247,7 +247,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       {/* Main content */}
       <div className="w-full max-w-6xl flex flex-col md:flex-row gap-4 flex-grow">
         <div className="flex flex-col md:w-3/4 flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
-          <div className="flex justify-center border border-gray-100 gap-4 p-3">
+          <div className="flex justify-center border border-gray-100 gap-4 p-5">
             <Button
               onClick={() => setActiveTab("Board")}
               variant={activeTab === "Board" ? "default" : "outline"}
