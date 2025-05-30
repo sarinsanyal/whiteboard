@@ -41,7 +41,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       case "Board":
         return <Board />;
       case "Code":
-        return <Code />;
+        return <Code roomId={roomId ?? ""} nickname={nickname ?? ""}/>;
       case "Video":
         return <Video />;
       default:
@@ -165,16 +165,16 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     }
   };
 
-  useEffect(() => {
-    const warnOnUnload = (e: BeforeUnloadEvent) => {
-      if (localStorage.getItem("hasLeftRoom") !== "true") {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-    window.addEventListener("beforeunload", warnOnUnload);
-    return () => window.removeEventListener("beforeunload", warnOnUnload);
-  }, []);
+  // useEffect(() => {
+  //   const warnOnUnload = (e: BeforeUnloadEvent) => {
+  //     if (localStorage.getItem("hasLeftRoom") !== "true") {
+  //       e.preventDefault();
+  //       e.returnValue = "";
+  //     }
+  //   };
+  //   window.addEventListener("beforeunload", warnOnUnload);
+  //   return () => window.removeEventListener("beforeunload", warnOnUnload);
+  // }, []);
 
   function useChatScroll<T>(dep: T): React.MutableRefObject<HTMLDivElement | null> {
     const ref = React.useRef<HTMLDivElement | null>(null);
@@ -185,7 +185,6 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     }, [dep]);
     return ref;
   }
-
 
   if (loading) {
     return (
@@ -248,7 +247,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       {/* Main content */}
       <div className="w-full max-w-6xl flex flex-col md:flex-row gap-4 flex-grow">
         <div className="flex flex-col md:w-3/4 flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
-          <div className="flex justify-center border border-gray-100 gap-4 p-5">
+          <div className="flex justify-center border border-gray-100 gap-4 p-3">
             <Button
               onClick={() => setActiveTab("Board")}
               variant={activeTab === "Board" ? "default" : "outline"}

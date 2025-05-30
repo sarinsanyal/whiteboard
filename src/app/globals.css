@@ -169,3 +169,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+.remote-cursor {
+  border-left: 2px solid red;
+  margin-left: -1px;
+  height: 100%;
+  position: relative;
+}
+
+.remote-cursor-label::after {
+  content: '';
+  position: absolute;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  top: -1.2em;
+  left: 0;
+}
