@@ -122,17 +122,17 @@ int main(){
 		socket.emit("code-change", { roomId, nickname, code: safeCode });
 	};
 	// Move handleCursorChange to outer scope so it can be used in both effects
-	const handleCursorChange = () => {
-		if (!editorRef.current) return;
+	// const handleCursorChange = () => {
+	// 	if (!editorRef.current) return;
 
-		const position = editorRef.current.getPosition(); // Get current cursor position
-		console.log(position);
-		socket.emit("cursor-change", {
-			roomId,
-			nickname,
-			cursor: position, // { lineNumber: number, column: number }
-		});
-	};
+	// 	const position = editorRef.current.getPosition(); // Get current cursor position
+	// 	console.log(position);
+	// 	socket.emit("cursor-change", {
+	// 		roomId,
+	// 		nickname,
+	// 		cursor: position, // { lineNumber: number, column: number }
+	// 	});
+	// };
 
 
 	useEffect(() => {
@@ -164,19 +164,19 @@ int main(){
 		};
 	}, []);
 
-	useEffect(() => {
-		if (!editorRef.current) return;
+	// useEffect(() => {
+	// 	if (!editorRef.current) return;
 
-		const editor = editorRef.current;
+	// 	const editor = editorRef.current;
 
-		// Listen to cursor movements
-		const disposable = editor.onDidChangeCursorPosition(handleCursorChange);
+	// 	// Listen to cursor movements
+	// 	const disposable = editor.onDidChangeCursorPosition(handleCursorChange);
 
-		// Cleanup on unmount
-		return () => {
-			disposable.dispose();
-		};
-	}, []);
+	// 	// Cleanup on unmount
+	// 	return () => {
+	// 		disposable.dispose();
+	// 	};
+	// }, []);
 
 
 	return (
