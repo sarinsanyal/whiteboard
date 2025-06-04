@@ -201,7 +201,7 @@ int main(){
 									<Button
 										type="button"
 										variant="default"
-										className="mr-2 cursor-pointer"
+										className="mb-2 md:mr-2 cursor-pointer"
 										onClick={() => {
 											navigator.clipboard.writeText(code).then(() => {
 												console.log("Code copied to clipboard");
