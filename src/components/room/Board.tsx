@@ -57,6 +57,7 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 	};
 
 	const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+		e.preventDefault();
 		const touch = e.touches[0];
 		const rect = canvasRef.current?.getBoundingClientRect();
 		if (!rect) return;
@@ -69,6 +70,7 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 	};
 
 	const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+		e.preventDefault();
 		if (!isDrawing || !lastPoint) return;
 
 		const touch = e.touches[0];
@@ -156,7 +158,7 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 				onTouchStart={handleTouchStart}
 				onTouchMove={handleTouchMove}
 				onTouchEnd={handleMouseUp}
-				className="rounded-lg shadow cursor-crosshair"
+				className="rounded-lg shadow cursor-crosshair touch-none"
 			/>
 		</div>
 	);
