@@ -56,6 +56,35 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 		setLastPoint(null);
 	};
 
+	const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+		const touch = e.touches[0];
+		const rect = canvasRef.current?.getBoundingClientRect();
+		if (!rect) return;
+
+		setIsDrawing(true);
+		setLastPoint({
+			x: touch.clientX - rect.left,
+			y: touch.clientY - rect.top
+		});
+	};
+
+	const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+		if (!isDrawing || !lastPoint) return;
+
+		const touch = e.touches[0];
+		const rect = canvasRef.current?.getBoundingClientRect();
+		if (!rect) return;
+
+		const x = touch.clientX - rect.left;
+		const y = touch.clientY - rect.top;
+
+		drawLine(lastPoint.x, lastPoint.y, x, y, color, true);
+		setLastPoint({ x, y });
+
+		// Prevent scrolling while drawing
+		e.preventDefault();
+	};
+
 	// sockt
 	useEffect(() => {
 		socket.on(
@@ -118,12 +147,15 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 			</div>
 			<canvas
 				ref={canvasRef}
-				width={800}
+				width="800vw"
 				height="377vh"
 				onMouseDown={handleMouseDown}
 				onMouseMove={handleMouseMove}
 				onMouseUp={handleMouseUp}
 				onMouseLeave={handleMouseUp}
+				onTouchStart={handleTouchStart}
+				onTouchMove={handleTouchMove}
+				onTouchEnd={handleMouseUp}
 				className="rounded-lg shadow cursor-crosshair"
 			/>
 		</div>
