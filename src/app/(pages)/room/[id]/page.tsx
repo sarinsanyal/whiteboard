@@ -39,11 +39,11 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const renderMainView = () => {
     switch (activeTab) {
       case "Board":
-        return <Board />;
+        return <Board roomId={roomId ?? ""} nickname={nickname ?? ""}/>;
       case "Code":
         return <Code roomId={roomId ?? ""} nickname={nickname ?? ""}/>;
       case "Video":
-        return <Video />;
+        return <Video roomId={roomId ?? ""} nickname={nickname ?? ""}/>;
       default:
         return null;
     }

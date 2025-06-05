@@ -110,7 +110,29 @@ int main(){
 	const selectedLang = languageArray.find(l => l.value === language);
 	const [code, setCode] = useState(languageArray[0].defaultCode);
 
-	const handleSubmit = async () => { };
+	const handleSubmit = async () => {
+		// try {
+		// 	const response = await fetch("https://ce.judge0.com/submissions/?base64_encoded=false&wait=true", {
+		// 		method: "POST",
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 		},
+		// 		body: JSON.stringify({
+		// 			language: language,
+		// 			source: code,
+		// 		}),
+		// 	});
+
+		// 	const result = await response.json();
+		// 	console.log(result);           
+
+		// 	alert(result.output || result.stderr);
+		// } catch (err) {
+		// 	console.error("Execution error:", err);
+		// 	alert("Error running code.");
+		// }
+	};
+
 	const handleLanguageChange = (value: string) => {
 		setLanguage(value);
 		const selected = languageArray.find(l => l.value === value);
@@ -182,7 +204,7 @@ int main(){
 	return (
 		<div className="flex justify-center items-start rounded-md">
 			<div className="w-full rounded-lg max-w-4xl p-4 border">
-				<form action="#" onSubmit={handleSubmit}>
+				<form action="#">
 					<div className="">
 						<label htmlFor="comment" className="sr-only">
 							Add your code
@@ -249,6 +271,7 @@ int main(){
 							<button
 								type="submit"
 								className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+								onClick={handleSubmit}
 							>
 								Run
 							</button>
