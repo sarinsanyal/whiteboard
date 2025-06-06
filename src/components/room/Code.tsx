@@ -101,10 +101,12 @@ export default function Code({
 							</div>
 							<div className="flex gap-2">
 								<Button
+									type="button"
 									onClick={() => {
 										navigator.clipboard.writeText(code);
 										toast.success("Code copied");
 									}}
+									className="cursor-pointer"
 								>
 									Copy Code
 								</Button>
