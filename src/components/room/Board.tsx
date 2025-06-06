@@ -83,7 +83,6 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 		drawLine(lastPoint.x, lastPoint.y, x, y, color, true);
 		setLastPoint({ x, y });
 
-		// Prevent scrolling while drawing
 		e.preventDefault();
 	};
 
