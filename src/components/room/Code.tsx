@@ -158,7 +158,6 @@ export default function Code({
 							onMount={handleEditorMount}
 							theme={theme === "light" ? "light" : "vs-dark"}
 							options={{
-								minimap: { enabled: false },
 								fontSize: 14,
 								tabSize: 2,
 								wordWrap: "on",
