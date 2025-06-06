@@ -20,14 +20,35 @@ type Language = {
 	defaultCode: string;
 };
 
+//languageas to add here
 const LANGUAGES: Language[] = [
-	{ label: "Javascript", value: "javascript", defaultCode: 'console.log("Hello JS");' },
-	{ label: "Typescript", value: "typescript", defaultCode: 'console.log("Hello TS");' },
-	{ label: "Python", value: "python", defaultCode: 'print("Hello Python")' },
-	{ label: "Java", value: "java", defaultCode: 'System.out.println("Hello Java");' },
-	{ label: "C++", value: "cpp", defaultCode: 'cout << "Hello C++";' },
-	{ label: "C", value: "c", defaultCode: 'printf("Hello C");' },
+	{ label: "JavaScript", value: "javascript", defaultCode: 'console.log("Welcome to Whiteboard!"); \n// Start typing from here\n\n' },
+	{ label: "TypeScript", value: "typescript", defaultCode: 'console.log("Welcome to Whiteboard!"); \n// Start typing from here\n\n' },
+	{ label: "Python", value: "python", defaultCode: 'print("Welcome to Whiteboard!")\n# Start typing from here\n\n' },
+	{ label: "Java", value: "java", defaultCode: 'public class Main {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println("Welcome to Whiteboard!");\n\t\t// Start typing from here\n\t}\n}\n' },
+	{ label: "C++", value: "cpp", defaultCode: '#include <iostream>\nusing namespace std;\n\nint main() {\n\tcout << "Welcome to Whiteboard!" << endl;\n\t// Start typing from here\n\treturn 0;\n}\n' },
+	{ label: "C", value: "c", defaultCode: '#include <stdio.h>\n\nint main() {\n\tprintf("Welcome to Whiteboard!\\n");\n\t// Start typing from here\n\treturn 0;\n}\n' },
+	{ label: "C#", value: "csharp", defaultCode: 'using System;\n\nclass Program {\n\tstatic void Main() {\n\t\tConsole.WriteLine("Welcome to Whiteboard!");\n\t\t// Start typing from here\n\t}\n}\n' },
+	{ label: "Go", value: "go", defaultCode: 'package main\n\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Welcome to Whiteboard!")\n\t// Start typing from here\n}\n' },
+	{ label: "Ruby", value: "ruby", defaultCode: 'puts "Welcome to Whiteboard!"\n# Start typing from here\n\n' },
+	{ label: "PHP", value: "php", defaultCode: '<?php\n\necho "Welcome to Whiteboard!\\n";\n// Start typing from here\n\n?>\n' },
+	{ label: "Rust", value: "rust", defaultCode: 'fn main() {\n\tprintln!("Welcome to Whiteboard!");\n\t// Start typing from here\n}\n' },
+	{ label: "Kotlin", value: "kotlin", defaultCode: 'fun main() {\n\tprintln("Welcome to Whiteboard!")\n\t// Start typing from here\n}\n' },
+	{ label: "Swift", value: "swift", defaultCode: 'import Foundation\n\nprint("Welcome to Whiteboard!")\n// Start typing from here\n' },
+	{ label: "R", value: "r", defaultCode: 'cat("Welcome to Whiteboard!\\n")\n# Start typing from here\n\n' },
+	{ label: "Bash", value: "bash", defaultCode: 'echo "Welcome to Whiteboard!"\n# Start typing from here\n\n' },
+	{ label: "SQL", value: "sql", defaultCode: '-- Welcome to Whiteboard!\n-- Start typing from here\n\nSELECT * FROM table_name;\n' },
+	{ label: "Perl", value: "perl", defaultCode: 'print "Welcome to Whiteboard!\\n";\n# Start typing from here\n\n' },
+	{ label: "Scala", value: "scala", defaultCode: 'object Main extends App {\n\tprintln("Welcome to Whiteboard!")\n\t// Start typing from here\n}\n' },
+	{ label: "Lua", value: "lua", defaultCode: 'print("Welcome to Whiteboard!")\n-- Start typing from here\n\n' },
+	{ label: "Haskell", value: "haskell", defaultCode: 'main = do\n\tputStrLn "Welcome to Whiteboard!"\n\t-- Start typing from here\n\n' },
+	{
+		label: "Assembly", value: "assembly",
+		defaultCode: `; Welcome to Whiteboard!\n; Start typing from here\n\nsection .data\n\tmsg db "Welcome to Whiteboard!", 0Ah\n\nsection .text\n\tglobal _start\n\n_start:\n\tmov eax, 4\t\t; syscall: write\n\tmov ebx, 1\t\t; file descriptor: stdout\n\tmov ecx, msg\t\t; message to write\n\tmov edx, 24\t\t; message length\n\tint 0x80\t\t; call kernel\n\n\texit:\n\tmov eax, 1\t\t; syscall: exit\n\txor ebx, ebx\t\t; status 0\n\tint 0x80\n\n; If you're still here, you’re either a wizard or a masochist\n`
+	}
+
 ];
+
 
 export default function Code({
 	roomId,
@@ -112,7 +133,7 @@ export default function Code({
 								</Button>
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
-										<Button variant="outline">{selectedLang?.label}</Button>
+										<Button variant="outline" className="cursor-pointer">{selectedLang?.label}</Button>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent className="w-56">
 										<DropdownMenuRadioGroup
@@ -120,7 +141,7 @@ export default function Code({
 											onValueChange={handleLanguageChange}
 										>
 											{LANGUAGES.map((lang) => (
-												<DropdownMenuRadioItem key={lang.value} value={lang.value}>
+												<DropdownMenuRadioItem key={lang.value} value={lang.value} className="cursor-pointer">
 													{lang.label}
 												</DropdownMenuRadioItem>
 											))}
