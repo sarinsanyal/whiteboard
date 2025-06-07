@@ -80,11 +80,21 @@ export default function Code({
 		const handleIncomingCode = (incoming: { code: string }) => {
 			setCode(incoming.code);
 		};
+		const handleIncomingLanguage = (incoming: { language: string }) => {
+			const selected = LANGUAGES.find((l) => l.value === incoming.language);
+			if (selected) {
+				setLanguage(incoming.language);
+				setCode(selected.defaultCode); // Optional: Reset code with default for new lang
+				toast.message(`Code Language changed to: ${selected.label}`);
+			}
+		};
 
 		socket.on("code-broadcast", handleIncomingCode);
-
+		socket.on("language-broadcast", handleIncomingLanguage);
+		
 		return () => {
 			socket.off("code-broadcast", handleIncomingCode);
+			socket.off("language-broadcast", handleIncomingLanguage);
 		};
 	}, []);
 
@@ -100,11 +110,18 @@ export default function Code({
 
 		setLanguage(value);
 		setCode(selected.defaultCode);
+		toast.message(`Code Language changed to: ${selected.label}`);
 
 		socket.emit("code-update", {
 			roomId,
 			nickname,
 			code: selected.defaultCode,
+		});
+
+		socket.emit("language-change", {
+			roomId,
+			nickname,
+			language: selected.value,
 		});
 	};
 
