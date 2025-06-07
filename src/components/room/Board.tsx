@@ -122,34 +122,42 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 	};
 
 	return (
-		<div className="flex flex-col items-center p-1 rounded-lg border shadow">
-			<div className="w-full mb-3">
-				<div className="flex justify-between items-center">
-					<div className="font-bold pl-2">
-						Draw and colab with room members!
-					</div>
-					<div className="flex items-center space-x-2">
-						<Button
-							type="button"
-							variant="default"
-							className="align-middle cursor-pointer mt-1"
-							onClick={handleClearClick}
-						>
-							Clear Whiteboard
-						</Button>
-						<input
-							type="color"
-							value={color}
-							onChange={(e) => setColor(e.target.value)}
-							className=" p-0 border-none cursor-pointer rounded-full"
-						/>
-					</div>
+	<div className="flex flex-col items-center p-1 rounded-lg border shadow w-full">
+		<div className="w-full mb-3">
+			<div className="flex justify-between items-center">
+				<div className="font-bold pl-2">
+					Draw and colab with room members!
+				</div>
+				<div className="flex items-center space-x-2">
+					<Button
+						type="button"
+						variant="default"
+						className="align-middle cursor-pointer mt-1"
+						onClick={handleClearClick}
+					>
+						Clear Whiteboard
+					</Button>
+					<input
+						type="color"
+						value={color}
+						onChange={(e) => setColor(e.target.value)}
+						className="p-0 border-none cursor-pointer rounded-full"
+					/>
 				</div>
 			</div>
+		</div>
+
+		<div
+			className="w-full max-w-full overflow-auto border rounded-md"
+			style={{
+				maxHeight: "70vh",
+				maxWidth: "100%",
+			}}
+		>
 			<canvas
 				ref={canvasRef}
-				width="800vw"
-				height="377vh"
+				width={2000}
+				height={2000}
 				onMouseDown={handleMouseDown}
 				onMouseMove={handleMouseMove}
 				onMouseUp={handleMouseUp}
@@ -157,8 +165,10 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 				onTouchStart={handleTouchStart}
 				onTouchMove={handleTouchMove}
 				onTouchEnd={handleMouseUp}
-				className="rounded-lg shadow cursor-crosshair touch-none"
+				className="rounded-md shadow cursor-crosshair touch-none block"
 			/>
 		</div>
-	);
+	</div>
+);
+
 }
