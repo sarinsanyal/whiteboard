@@ -160,6 +160,13 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 		};
 	}, [roomId]);
 
+	const handleClearClick = () => {
+		clearBoard();
+		setStrokes([]);
+		setRedoStack([]);
+		socket.emit("clear-canvas", { room: roomId });
+	};
+	
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		const ctx = canvas?.getContext("2d");
@@ -172,12 +179,6 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 	}, [strokes]);
 
 
-	const handleClearClick = () => {
-		clearBoard();
-		setStrokes([]);
-		setRedoStack([]);
-		socket.emit("clear-canvas", { room: roomId });
-	};
 
 	return (
 		<div className="flex flex-col items-center p-1 rounded-lg border shadow w-full">
