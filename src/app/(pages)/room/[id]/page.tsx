@@ -39,11 +39,11 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const renderMainView = () => {
     switch (activeTab) {
       case "Board":
-        return <Board roomId={roomId ?? ""} nickname={nickname ?? ""}/>;
+        return <Board roomId={roomId ?? ""} nickname={nickname ?? ""} />;
       case "Code":
-        return <Code roomId={roomId ?? ""} nickname={nickname ?? ""}/>;
+        return <Code roomId={roomId ?? ""} nickname={nickname ?? ""} />;
       case "Video":
-        return <Video roomId={roomId ?? ""} nickname={nickname ?? ""}/>;
+        return <Video roomId={roomId ?? ""} nickname={nickname ?? ""} />;
       default:
         return null;
     }
@@ -212,7 +212,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   return (
     <div className="flex flex-col items-center min-h-screen p-4 pt-20 bg-gray-50 dark:bg-black space-y-4">
       {/* Header */}
-      <div className="w-full max-w-6xl flex flex-col bg-white dark:bg-gray-950 z-1 p-5 shadow-md border rounded-lg border-gray-100 md:flex-row md:justify-between md:items-center text-center md:text-left space-y-2 md:space-y-0">
+      <div className="w-full max-w-7xl flex flex-col bg-white dark:bg-gray-950 z-1 p-5 shadow-md border rounded-lg border-gray-100 md:flex-row md:justify-between md:items-center text-center md:text-left space-y-2 md:space-y-0">
         <h1 className="text-2xl z-1 font-bold">
           Welcome to Room: <AuroraText>{roomId}</AuroraText>
         </h1>
@@ -245,7 +245,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
       </div>
 
       {/* Main content */}
-      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-4 flex-grow">
+      <div className="w-full min-h-screen max-w-7xl flex flex-col md:flex-row gap-4 flex-grow">
         <div className="flex flex-col md:w-3/4 flex-grow bg-white dark:bg-gray-950 rounded-lg shadow-md overflow-hidden border z-1 border-gray-200">
           <div className="flex justify-center border border-gray-100 gap-4 p-5">
             <Button
