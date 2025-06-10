@@ -149,6 +149,8 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 	useEffect(() => {
 		const onClear = (data: { room: string }) => {
 			if (data.room === roomId) {
+				setStrokes([]);
+				setRedoStack([]);
 				clearBoard();
 			}
 		};
@@ -166,7 +168,7 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 		setRedoStack([]);
 		socket.emit("clear-canvas", { room: roomId });
 	};
-	
+
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		const ctx = canvas?.getContext("2d");
