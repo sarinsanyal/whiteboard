@@ -174,6 +174,8 @@ export default function Whiteboard({ roomId, nickname }: { roomId: string, nickn
 
 	const handleClearClick = () => {
 		clearBoard();
+		setStrokes([]);
+		setRedoStack([]);
 		socket.emit("clear-canvas", { room: roomId });
 	};
 
