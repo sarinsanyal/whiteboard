@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { socket } from "@/socket";
 import Board from "@/components/room/Board";
 import Code from "@/components/room/Code";
-import Video from "@/components/room/Video";
+// import Video from "@/components/room/Video";
 import {
   Popover,
   PopoverContent,
@@ -42,8 +42,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         return <Board roomId={roomId ?? ""} nickname={nickname ?? ""} />;
       case "Code":
         return <Code roomId={roomId ?? ""} nickname={nickname ?? ""} />;
-      case "Video":
-        return <Video roomId={roomId ?? ""} nickname={nickname ?? ""} />;
+      // case "Video":
+      //   return <Video roomId={roomId ?? ""} nickname={nickname ?? ""} />;
       default:
         return null;
     }
@@ -262,13 +262,13 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             >
               Code Editor
             </Button>
-            <Button
+            {/* <Button
               onClick={() => setActiveTab("Video")}
               variant={activeTab === "Video" ? "default" : "outline"}
               className="text-xs md:text-sm cursor-pointer"
             >
               Video Call
-            </Button>
+            </Button> */}
           </div>
 
           <div className="flex-grow text-center bg-white dark:bg-gray-950 rounded-lg shadow-md p-4 overflow-hidden">

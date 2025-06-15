@@ -14,6 +14,11 @@ import {
 import { socket } from "@/socket";
 import { toast } from "sonner";
 
+import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
+import { MonacoBinding } from "y-monaco";
+import { Awareness } from "y-protocols/awareness";
+
 type Language = {
 	label: string;
 	value: string;
